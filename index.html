@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evaluasi Informatika - Arsitek Digital MTs</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js untuk efek suara edukatif tanpa file eksternal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <!-- Google Fonts: Fredoka & Plus Jakarta Sans untuk nuansa ramah anak dan jelas di proyektor -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f0fdf4;
+      background-image: 
+        radial-gradient(at 10% 10%, rgba(16, 185, 129, 0.14) 0px, transparent 50%),
+        radial-gradient(at 90% 20%, rgba(245, 158, 11, 0.14) 0px, transparent 50%),
+        radial-gradient(at 50% 90%, rgba(14, 165, 233, 0.14) 0px, transparent 50%);
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, .font-display {
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    /* Pola geometris halus bernuansa islami modern */
+    .islamic-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23059669' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Animasi mengambang & transisi halus */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-float {
+      animation: floatSlow 3.5s ease-in-out infinite;
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-pop {
+      animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Styling tombol 3D lembut yang nyaman untuk touch screen HP & klik di proyektor */
+    .btn-3d {
+      transition: all 0.15s ease;
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.15);
+    }
+    .btn-3d:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    /* Chip interaktif yang bisa dipilih */
+    .chip-item {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+    .chip-item:hover {
+      transform: translateY(-2px);
+    }
+    .chip-item:active {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+<body class="islamic-pattern text-slate-800 flex flex-col justify-between selection:bg-emerald-200 selection:text-emerald-900">
+
+  <!-- HEADER / HUD ATAS (Selalu terlihat saat bermain, proporsional untuk HP & Proyektor) -->
+  <header class="w-full max-w-5xl mx-auto px-4 pt-4 pb-2">
+    <div class="bg-white/90 backdrop-blur-md border-2 border-emerald-200 rounded-3xl px-4 py-3 sm:px-6 sm:py-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+      <!-- Identitas Game & Madrasah -->
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md shrink-0">
+          <!-- Ikon SVG Arsitek Digital & Bintang Islami -->
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 2L14.8 8.5L22 9.2L16.5 14L18.2 21L12 17.3L5.8 21L7.5 14L2 9.2L9.2 8.5L12 2Z" />
+          </svg>
+        </div>
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 block">MTs • Kelas VIII Informatika</span>
+          <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 leading-tight">Evaluasi Informatika</h1>
+        </div>
+      </div>
+
+      <!-- Status Skor & Suara -->
+      <div class="flex items-center gap-2 sm:gap-3 ml-auto">
+        <!-- Tombol Audio -->
+        <button id="btn-sound" onclick="toggleSound()" title="Suara Efek" class="p-2.5 sm:p-3 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300 transition flex items-center justify-center">
+          <svg id="icon-sound-on" class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+          <svg id="icon-sound-off" class="w-5 h-5 sm:w-6 sm:h-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+        </button>
+
+        <!-- Kotak Skor -->
+        <div class="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl shadow-sm flex items-center gap-2 border-b-4 border-orange-500">
+          <span class="text-lg sm:text-xl">⭐</span>
+          <div>
+            <div class="text-[10px] sm:text-xs font-bold uppercase tracking-wider opacity-90 leading-none">Skor Ilmu</div>
+            <div id="hud-score" class="text-lg sm:text-2xl font-extrabold leading-tight">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indikator Progres 5 Babak (Muncul saat bermain) -->
+    <div id="progress-container" class="hidden mt-3 bg-white/80 backdrop-blur-sm rounded-2xl p-3 border border-emerald-100 shadow-sm">
+      <div class="flex items-center justify-between text-xs sm:text-sm font-bold text-slate-600 mb-1.5 px-1">
+        <span id="hud-stage-label" class="text-emerald-700">Babak 1 dari 5</span>
+        <span id="hud-player-badge" class="text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-full">Arsitek Digital</span>
+      </div>
+      <div class="w-full bg-slate-200 h-3 sm:h-3.5 rounded-full overflow-hidden p-0.5">
+        <div id="hud-progress-bar" class="bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-400 h-full rounded-full transition-all duration-500" style="width: 20%;"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="w-full max-w-5xl mx-auto px-4 py-3 flex-grow flex items-center justify-center">
+
+    <!-- ==================== LAYAR 1: PEMBUKA / WELCOME SCREEN ==================== -->
+    <section id="screen-start" class="w-full bg-white rounded-3xl border-4 border-emerald-200 shadow-xl p-6 sm:p-10 text-center animate-pop">
+      <div class="max-w-2xl mx-auto">
+        <!-- Ilustrasi SVG Karakter Arsitek Digital Madrasah -->
+        <div class="w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-5 bg-gradient-to-tr from-emerald-100 via-teal-50 to-amber-100 rounded-3xl border-2 border-emerald-300 flex items-center justify-center shadow-inner animate-float">
+          <svg class="w-20 h-20 text-emerald-600" viewBox="0 0 64 64" fill="none">
+            <!-- Kubah & Menara Digital -->
+            <rect x="14" y="34" width="36" height="20" rx="4" fill="#10B981" fill-opacity="0.2" stroke="#059669" stroke-width="2.5"/>
+            <path d="M20 34C20 24 44 24 44 34" fill="#F59E0B" fill-opacity="0.3" stroke="#D97706" stroke-width="2.5"/>
+            <path d="M32 14V23" stroke="#059669" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="32" cy="12" r="3" fill="#F59E0B"/>
+            <!-- Node Sirkuit Ilmu -->
+            <circle cx="10" cy="24" r="3" fill="#0EA5E9"/>
+            <path d="M13 24H18L21 28" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="54" cy="24" r="3" fill="#0EA5E9"/>
+            <path d="M51 24H46L43 28" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round"/>
+            <!-- Kode Biner 1 0 -->
+            <text x="23" y="47" fill="#065F46" font-family="monospace" font-weight="bold" font-size="10">1010</text>
+          </svg>
+        </div>
+
+        <div class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold mb-3">
+          <span>🕌</span> Misi Arsitek Digital & Cinta Ilmu
+        </div>
+
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-800 mb-3 leading-tight">
+          Assalamu'alaikum, <span class="text-emerald-600">Arsitek Digital!</span>
+        </h2>
+
+        <p class="text-slate-600 text-base sm:text-lg mb-6 leading-relaxed">
+          Selamat datang di tantangan <strong>Evaluasi Informatika</strong> kelas VIII MTs! 
+          Ayo selesaikan <strong>5 Babak Misi</strong> berdasarkan soal Uraian (Bagian II) untuk merancang sistem digital yang bermanfaat dan penuh keberkahan ilmu.
+        </p>
+
+        <!-- Input Nama Pemain (Opsional agar ramah dipakai perorangan di HP maupun kelompok di Proyektor) -->
+        <div class="max-w-md mx-auto mb-6 text-left">
+          <label for="input-player-name" class="block text-sm font-bold text-slate-700 mb-1.5 ml-1">
+            Nama Siswa / Kelompok Kelas VIII:
+          </label>
+          <input 
+            type="text" 
+            id="input-player-name" 
+            placeholder="Contoh: Ahmad / Kelompok Al-Khawarizmi" 
+            class="w-full px-4 py-3.5 rounded-2xl border-2 border-emerald-200 focus:border-emerald-500 focus:outline-none text-base sm:text-lg font-semibold text-slate-800 bg-emerald-50/40 placeholder:text-slate-400"
+          />
+        </div>
+
+        <!-- Ringkasan 5 Babak -->
+        <div class="grid grid-cols-5 gap-1.5 sm:gap-3 max-w-xl mx-auto mb-7 text-xs sm:text-sm">
+          <div class="bg-sky-50 border border-sky-200 p-2 rounded-2xl font-bold text-sky-800">
+            <div class="text-base sm:text-lg">🔍</div>Babak 1<br><span class="font-normal text-[11px] hidden sm:inline">HLOOKUP</span>
+          </div>
+          <div class="bg-purple-50 border border-purple-200 p-2 rounded-2xl font-bold text-purple-800">
+            <div class="text-base sm:text-lg">📊</div>Babak 2<br><span class="font-normal text-[11px] hidden sm:inline">Visualisasi</span>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 p-2 rounded-2xl font-bold text-amber-800">
+            <div class="text-base sm:text-lg">🔢</div>Babak 3<br><span class="font-normal text-[11px] hidden sm:inline">4 Sistem</span>
+          </div>
+          <div class="bg-rose-50 border border-rose-200 p-2 rounded-2xl font-bold text-rose-800">
+            <div class="text-base sm:text-lg">⚡</div>Babak 4<br><span class="font-normal text-[11px] hidden sm:inline">Biner</span>
+          </div>
+          <div class="bg-emerald-50 border border-emerald-200 p-2 rounded-2xl font-bold text-emerald-800">
+            <div class="text-base sm:text-lg">🧮</div>Babak 5<br><span class="font-normal text-[11px] hidden sm:inline">Konversi 80</span>
+          </div>
+        </div>
+
+        <button onclick="startGame()" class="btn-3d w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-display text-xl sm:text-2xl font-bold tracking-wide cursor-pointer">
+          🚀 Mulai Misi Arsitek Digital!
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== LAYAR 2: AREA PERMAINAN (5 BABAK) ==================== -->
+    <section id="screen-game" class="hidden w-full bg-white rounded-3xl border-4 border-emerald-200 shadow-xl p-5 sm:p-8 animate-pop">
+      
+      <!-- Header Babak -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-5 border-b-2 border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <span id="stage-badge" class="px-3.5 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 font-extrabold text-sm sm:text-base">
+            BABAK 1
+          </span>
+          <h2 id="stage-title" class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800">
+            Judul Babak
+          </h2>
+        </div>
+        <span class="text-xs sm:text-sm font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-xl">
+          Poin Maksimal: +20 ⭐
+        </span>
+      </div>
+
+      <!-- Konteks Cerita & Pertanyaan Uraian Asli -->
+      <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-sky-50 border-2 border-emerald-200 rounded-2xl p-4 sm:p-5 mb-6">
+        <p id="stage-story" class="text-sm sm:text-base text-emerald-800 font-semibold mb-2">
+          Cerita pengantar babak...
+        </p>
+        <div class="bg-white/90 rounded-xl p-3.5 sm:p-4 border border-emerald-100 shadow-xs">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-amber-600 block mb-1">📜 Soal Uraian (Bagian II):</span>
+          <p id="stage-question" class="text-base sm:text-xl font-bold text-slate-800 leading-snug">
+            Pertanyaan soal...
+          </p>
+        </div>
+      </div>
+
+      <!-- Area Interaktif Dinamis (Berubah sesuai Babak 1 - 5) -->
+      <div id="interactive-area" class="mb-6">
+        <!-- Konten diisi via JavaScript -->
+      </div>
+
+      <!-- Kotak Umpan Balik (Muncul setelah siswa memeriksa jawaban) -->
+      <div id="feedback-box" class="hidden rounded-2xl p-4 sm:p-5 mb-5 border-2 animate-pop">
+        <div class="flex items-start gap-3">
+          <div id="feedback-icon" class="text-3xl sm:text-4xl shrink-0">🌟</div>
+          <div class="flex-grow">
+            <h3 id="feedback-title" class="text-lg sm:text-xl font-extrabold mb-1">Judul Umpan Balik</h3>
+            <p id="feedback-text" class="text-sm sm:text-base leading-relaxed mb-3"></p>
+            <div class="bg-white/80 rounded-xl p-3 border border-black/10 text-xs sm:text-sm">
+              <strong class="block text-slate-800 mb-0.5">📘 Ringkasan Kunci Jawaban Esai:</strong>
+              <span id="feedback-key" class="text-slate-700 font-medium"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tombol Aksi Bawah -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+        <button id="btn-reset-stage" onclick="resetCurrentStage()" class="w-full sm:w-auto px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm sm:text-base transition cursor-pointer">
+          🔄 Ulangi Susunan
+        </button>
+
+        <button id="btn-submit-stage" onclick="checkCurrentStage()" class="btn-3d w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-display text-lg sm:text-xl font-bold cursor-pointer">
+          ✅ Periksa Jawaban
+        </button>
+
+        <button id="btn-next-stage" onclick="nextStage()" class="hidden btn-3d w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-display text-lg sm:text-xl font-bold cursor-pointer">
+          Lanjut Babak Berikutnya ➡️
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== LAYAR 3: PENUTUP & PESAN HIKMAH ==================== -->
+    <section id="screen-end" class="hidden w-full bg-white rounded-3xl border-4 border-amber-300 shadow-2xl p-6 sm:p-10 text-center animate-pop">
+      <div class="max-w-3xl mx-auto">
+        <!-- Piala Arsitek Digital -->
+        <div class="w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-4 bg-gradient-to-br from-amber-300 to-orange-400 rounded-full flex items-center justify-center text-5xl sm:text-6xl shadow-lg border-4 border-white animate-float">
+          🏆
+        </div>
+
+        <span class="inline-block px-4 py-1 rounded-full bg-amber-100 text-amber-800 font-extrabold text-xs sm:text-sm mb-2">
+          MISI SELESAI • ALHAMDULILLAH!
+        </span>
+
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-800 mb-2">
+          Selamat, <span id="final-player-name" class="text-emerald-600">Arsitek Digital</span>!
+        </h2>
+
+        <p id="final-predicate" class="text-base sm:text-lg font-bold text-amber-600 mb-5">
+          Predikat: Arsitek Digital Utama Madrasah
+        </p>
+
+        <!-- Kartu Skor Akhir -->
+        <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-3xl p-5 sm:p-6 max-w-md mx-auto mb-6 shadow-md">
+          <div class="text-xs sm:text-sm uppercase tracking-widest font-bold opacity-90">Total Skor Evaluasi</div>
+          <div class="text-5xl sm:text-6xl font-display font-extrabold my-1">
+            <span id="final-score">100</span><span class="text-2xl sm:text-3xl opacity-80">/100</span>
+          </div>
+          <div id="final-stars" class="text-2xl sm:text-3xl tracking-widest mt-1">⭐⭐⭐⭐⭐</div>
+        </div>
+
+        <!-- PESAN HIKMAH CINTA ILMU SEBAGAI AMANAH ALLAH & RASUL -->
+        <div class="bg-gradient-to-br from-amber-50 via-yellow-50 to-emerald-50 border-2 border-amber-300 rounded-3xl p-5 sm:p-7 text-left shadow-inner mb-7">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shrink-0 shadow-xs">
+              🕌
+            </div>
+            <h3 class="text-lg sm:text-2xl font-extrabold text-amber-900">
+              Pesan Hikmah: Cinta Ilmu sebagai Amanah Allah & Rasul-Nya
+            </h3>
+          </div>
+          <p class="text-slate-700 text-sm sm:text-base leading-relaxed mb-3">
+            Anak-anakku generasi emas MTs, setiap angka biner, rumus pengolah data, dan sistem teknologi yang kalian pelajari hari ini adalah bagian dari ilmu Allah SWT yang Maha Luas. 
+            Rasulullah SAW bersabda bahwa menuntut ilmu adalah kewajiban setiap muslim dan jalan menuju surga.
+          </p>
+          <p class="text-slate-700 text-sm sm:text-base leading-relaxed font-medium">
+            Sebagai <strong>Arsitek Digital</strong>, jagalah <strong>cinta ilmu sebagai amanah dari Allah dan Rasul-Nya</strong>: gunakan kepintaran teknologi untuk menebar kejujuran, membantu sesama, menjaga adab di dunia digital, dan membangun peradaban yang diridhai Allah SWT. <em>Barakallahu fiikum!</em>
+          </p>
+        </div>
+
+        <!-- Ringkasan Nilai Per Babak -->
+        <div id="final-summary-grid" class="grid grid-cols-1 sm:grid-cols-5 gap-2 mb-7 text-xs sm:text-sm">
+          <!-- Diisi via JS -->
+        </div>
+
+        <button onclick="restartWholeGame()" class="btn-3d px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-display text-lg sm:text-xl font-bold cursor-pointer">
+          🔁 Mainkan Ulang Evaluasi
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="w-full text-center py-3 px-4 text-xs sm:text-sm text-slate-500">
+    Evaluasi Informatika Kelas VIII MTs • Arsitek Digital & Cinta Ilmu
+  </footer>
+
+  <!-- ==================== LOGIKA PERMAINAN & AUDIO ==================== -->
+  <script>
+    // --- 1. SISTEM AUDIO SINTETIS (TONE.JS) ---
+    let soundEnabled = true;
+    let synth = null;
+
+    function initAudio() {
+      if (!synth && typeof Tone !== 'undefined') {
+        synth = new Tone.PolySynth(Tone.Synth).toDestination();
+        synth.volume.value = -8;
+      }
+    }
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        if (Tone.context.state !== 'running') {
+          Tone.start();
+        }
+        const now = Tone.now();
+        if (type === 'click') {
+          synth.triggerAttackRelease('C5', '32n', now);
+        } else if (type === 'select') {
+          synth.triggerAttackRelease('E5', '32n', now);
+        } else if (type === 'success') {
+          synth.triggerAttackRelease(['C5', 'E5', 'G5', 'C6'], '16n', now);
+        } else if (type === 'partial') {
+          synth.triggerAttackRelease(['C5', 'E5', 'G5'], '16n', now);
+        } else if (type === 'error') {
+          synth.triggerAttackRelease(['E4', 'C4'], '16n', now);
+        } else if (type === 'fanfare') {
+          synth.triggerAttackRelease('C5', '16n', now);
+          synth.triggerAttackRelease('E5', '16n', now + 0.12);
+          synth.triggerAttackRelease('G5', '16n', now + 0.24);
+          synth.triggerAttackRelease('C6', '4n', now + 0.36);
+        }
+      } catch (e) {
+        // Abaikan jika browser membatasi autoplay audio
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('icon-sound-on').classList.toggle('hidden', !soundEnabled);
+      document.getElementById('icon-sound-off').classList.toggle('hidden', soundEnabled);
+      if (soundEnabled) playSound('click');
+    }
+
+    // --- 2. STATE GLOBAL PERMAINAN ---
+    const gameState = {
+      playerName: 'Arsitek Digital',
+      currentStage: 0, // 0..4 untuk Babak 1..5
+      scores: [0, 0, 0, 0, 0],
+      stageCompleted: [false, false, false, false, false]
+    };
+
+    // Data 5 Babak yang diambil langsung dari Bagian II (Esai) dokumen PAS Informatika Kelas VIII
+    const stagesData = [
+      {
+        badge: 'BABAK 1 • LOGIKA SPREADSHEET',
+        title: 'Misi Pencarian Data Horizontal',
+        story: 'Kamu sedang merancang tabel rekap nilai tahfiz dan informatika siswa MTs. Kamu perlu mengambil data dari tabel referensi yang judul kolomnya tersusun mendatar (horizontal).',
+        question: '1. Jelaskan fungsi HLOOKUP dalam pengolahan data!',
+        keyAnswer: 'HLOOKUP (Horizontal Lookup) adalah fungsi pada aplikasi pengolah angka (spreadsheet) untuk mencari suatu nilai pada baris pertama sebuah tabel secara horizontal (mendatar), lalu mengambil data yang sekolom dari baris tertentu di bawahnya.',
+        type: 'sentence-builder',
+        promptHint: 'Susunlah kalimat penjelasan fungsi HLOOKUP dengan menekan balok-balok kata di bawah ini secara berurutan:',
+        blocks: [
+          { id: 'b1', text: 'Mencari data pada baris pertama tabel secara horizontal (mendatar),' },
+          { id: 'b2', text: 'lalu mengambil nilai dari baris lain di bawahnya' },
+          { id: 'b3', text: 'pada kolom yang sesuai.' }
+        ],
+        distractors: [
+          { id: 'd1', text: 'Menghitung total seluruh angka secara otomatis (SUM).' },
+          { id: 'd2', text: 'Mencari data secara vertikal dari atas ke bawah (VLOOKUP).' }
+        ],
+        correctOrder: ['b1', 'b2', 'b3']
+      },
+      {
+        badge: 'BABAK 2 • GRAFIK & INFORMASI',
+        title: 'Galeri Visualisasi Data Madrasah',
+        story: 'Kepala Madrasah meminta laporan kunjungan perpustakaan dan komposisi sampah madrasah agar mudah dipahami oleh semua guru dan santri dalam sekali pandang.',
+        question: '2. Apa yang dimaksud dengan visualisasi data?',
+        keyAnswer: 'Visualisasi data adalah proses menyajikan atau mengubah data dan angka ke dalam bentuk visual/grafis (seperti diagram batang, diagram lingkaran, grafik garis, atau peta) agar informasi, pola, dan tren lebih mudah dipahami.',
+        type: 'multi-concept',
+        promptHint: 'Pilih 3 pernyataan yang TEPAT menjelaskan pengertian dan tujuan visualisasi data:',
+        options: [
+          { id: 'opt1', text: 'Menyajikan data angka ke dalam bentuk grafik, diagram, atau gambar visual', correct: true },
+          { id: 'opt2', text: 'Memudahkan pembaca memahami pola, perbandingan, dan kesimpulan data dengan cepat', correct: true },
+          { id: 'opt3', text: 'Mengubah informasi mentah menjadi tampilan yang menarik dan komunikatif', correct: true },
+          { id: 'opt4', text: 'Menghapus seluruh data asli agar tidak bisa dihitung kembali', correct: false },
+          { id: 'opt5', text: 'Mengubah semua tulisan menjadi kode rahasia yang sulit dibaca', correct: false }
+        ]
+      },
+      {
+        badge: 'BABAK 3 • PONDASI BILANGAN KOMPUTER',
+        title: 'Empat Pilar Sistem Bilangan',
+        story: 'Sebagai Arsitek Digital, kamu harus mengenal bahasa angka yang digunakan komputer—mulai dari sakelar 0 & 1 hingga kode warna #FF0100.',
+        question: '3. Sebutkan 4 sistem bilangan pada komputer!',
+        keyAnswer: '4 sistem bilangan pada komputer adalah: (1) Biner (basis 2: 0-1), (2) Oktal (basis 8: 0-7), (3) Desimal (basis 10: 0-9), dan (4) Heksadesimal (basis 16: 0-9 dan A-F).',
+        type: 'four-pillars',
+        promptHint: 'Pilih 4 sistem bilangan komputer yang benar, lalu perhatikan basis angkanya!',
+        candidates: [
+          { id: 'sys-bin', name: 'Biner', basis: 'Basis 2 (0, 1)', correct: true, icon: '💻' },
+          { id: 'sys-okt', name: 'Oktal', basis: 'Basis 8 (0 - 7)', correct: true, icon: '🎱' },
+          { id: 'sys-des', name: 'Desimal', basis: 'Basis 10 (0 - 9)', correct: true, icon: '🔟' },
+          { id: 'sys-hex', name: 'Heksadesimal', basis: 'Basis 16 (0-9, A-F)', correct: true, icon: '🎨' },
+          { id: 'sys-rom', name: 'Romawi', basis: 'Huruf I, V, X, L, C', correct: false, icon: '🏛️' },
+          { id: 'sys-pri', name: 'Prima', basis: 'Angka 2, 3, 5, 7...', correct: false, icon: '🔢' }
+        ]
+      },
+      {
+        badge: 'BABAK 4 • ARSITEKTUR PERANGKAT KERAS',
+        title: 'Rahasia Bahasa Biner (0 dan 1)',
+        story: 'Di dalam prosesor komputer terdapat miliaran sakelar elektronik super kecil (transistor) yang bekerja dengan aliran listrik.',
+        question: '4. Jelaskan alasan sistem komputer menggunakan bilangan biner untuk menyimpan data!',
+        keyAnswer: 'Komputer menggunakan bilangan biner (0 dan 1) karena komponen elektronik di dalamnya bekerja berdasarkan dua kondisi arus listrik, yaitu mati/OFF (0) dan hidup/ON (1), sehingga lebih stabil, cepat, dan minim kesalahan pembacaan.',
+        type: 'binary-circuit',
+        promptHint: 'Nyalakan sakelar sirkuit yang berisi 2 alasan utama mengapa komputer memilih sistem biner:',
+        reasons: [
+          {
+            id: 'r1',
+            title: 'Sesuai Dua Kondisi Sinyal Listrik (ON & OFF)',
+            desc: 'Komponen elektronik/transistor bekerja dengan dua keadaan: ada arus listrik (1 / ON) dan tidak ada arus listrik (0 / OFF).',
+            correct: true
+          },
+          {
+            id: 'r2',
+            title: 'Lebih Stabil, Cepat & Minim Kesalahan Sinyal',
+            desc: 'Membedakan 2 kondisi tegangan listrik jauh lebih akurat dan tahan gangguan dibanding membedakan 10 level tegangan.',
+            correct: true
+          },
+          {
+            id: 'r3',
+            title: 'Karena Komputer Tidak Bisa Menghitung Angka 2 sampai 9',
+            desc: 'Komputer hanya diciptakan khusus untuk mengetik angka nol dan satu saja.',
+            correct: false
+          },
+          {
+            id: 'r4',
+            title: 'Agar Ukuran Layar Monitor Menjadi Lebih Lebar',
+            desc: 'Bilangan biner berfungsi untuk memperbesar ukuran fisik monitor dan keyboard.',
+            correct: false
+          }
+        ]
+      },
+      {
+        badge: 'BABAK 5 • LAB KONVERSI BILANGAN',
+        title: 'Konversi Bilangan 80₁₀ ke Biner',
+        story: 'Tantangan terakhir Arsitek Digital! Lengkapi tabel pembagian berulang dengan basis 2 untuk mengonversi bilangan desimal 80 menjadi bilangan biner.',
+        question: '5. Konversikanlah bilangan 80₁₀ ke dalam bilangan biner, lengkap dengan tabel serta langkahnya!',
+        keyAnswer: '80 ÷ 2 = 40 sisa 0 | 40 ÷ 2 = 20 sisa 0 | 20 ÷ 2 = 10 sisa 0 | 10 ÷ 2 = 5 sisa 0 | 5 ÷ 2 = 2 sisa 1 | 2 ÷ 2 = 1 sisa 0 | 1 ÷ 2 = 0 sisa 1. Dibaca dari sisa terbawah ke atas: 1010000₂.',
+        type: 'conversion-table',
+        promptHint: 'Isi sisa hasil bagi (0 atau 1) pada setiap baris tabel pembagian 2, lalu pilih hasil akhir biner yang dibaca dari bawah ke atas!'
+      }
+    ];
+
+    // State khusus tiap babak
+    let stage1Selected = [];
+    let stage2Selected = new Set();
+    let stage3Selected = new Set();
+    let stage4Selected = new Set();
+    let stage5Remainders = ['', '', '', '', '', '', ''];
+    let stage5FinalBinary = '';
+
+    // --- 3. NAVIGASI LAYAR ---
+    function startGame() {
+      playSound('success');
+      const nameInput = document.getElementById('input-player-name').value.trim();
+      gameState.playerName = nameInput || 'Arsitek Digital MTs';
+      document.getElementById('hud-player-badge').textContent = '🧑‍💻 ' + gameState.playerName;
+
+      gameState.currentStage = 0;
+      gameState.scores = [0, 0, 0, 0, 0];
+      gameState.stageCompleted = [false, false, false, false, false];
+      updateHUD();
+
+      document.getElementById('screen-start').classList.add('hidden');
+      document.getElementById('screen-end').classList.add('hidden');
+      document.getElementById('screen-game').classList.remove('hidden');
+      document.getElementById('progress-container').classList.remove('hidden');
+
+      renderStage(0);
+    }
+
+    function restartWholeGame() {
+      playSound('click');
+      document.getElementById('screen-end').classList.add('hidden');
+      document.getElementById('screen-start').classList.remove('hidden');
+      document.getElementById('progress-container').classList.add('hidden');
+    }
+
+    function updateHUD() {
+      const totalScore = gameState.scores.reduce((a, b) => a + b, 0);
+      document.getElementById('hud-score').textContent = totalScore;
+      const stageNum = gameState.currentStage + 1;
+      document.getElementById('hud-stage-label').textContent = `Babak ${stageNum} dari 5`;
+      document.getElementById('hud-progress-bar').style.width = `${(stageNum / 5) * 100}%`;
+    }
+
+    // --- 4. RENDER BABAK 1 - 5 ---
+    function renderStage(index) {
+      const stage = stagesData[index];
+      updateHUD();
+
+      document.getElementById('stage-badge').textContent = stage.badge;
+      document.getElementById('stage-title').textContent = stage.title;
+      document.getElementById('stage-story').textContent = stage.story;
+      document.getElementById('stage-question').textContent = stage.question;
+
+      // Reset tampilan feedback & tombol
+      const feedbackBox = document.getElementById('feedback-box');
+      feedbackBox.classList.add('hidden');
+      document.getElementById('btn-submit-stage').classList.remove('hidden');
+      document.getElementById('btn-reset-stage').classList.remove('hidden');
+      document.getElementById('btn-next-stage').classList.add('hidden');
+
+      const container = document.getElementById('interactive-area');
+      container.innerHTML = '';
+
+      if (stage.type === 'sentence-builder') {
+        renderStage1(container, stage);
+      } else if (stage.type === 'multi-concept') {
+        renderStage2(container, stage);
+      } else if (stage.type === 'four-pillars') {
+        renderStage3(container, stage);
+      } else if (stage.type === 'binary-circuit') {
+        renderStage4(container, stage);
+      } else if (stage.type === 'conversion-table') {
+        renderStage5(container, stage);
+      }
+    }
+
+    // --- BABAK 1: SUSUN KALIMAT FUNGSI HLOOKUP ---
+    function renderStage1(container, stage) {
+      stage1Selected = [];
+      const allBlocks = [...stage.blocks, ...stage.distractors].sort(() => Math.random() - 0.5);
+
+      container.innerHTML = `
+        <p class="text-sm sm:text-base font-bold text-slate-700 mb-3">💡 ${stage.promptHint}</p>
+        
+        <!-- Visual Mini Tabel Horizontal (Ilustrasi HLOOKUP) -->
+        <div class="mb-4 overflow-x-auto bg-sky-50 border border-sky-200 rounded-2xl p-3">
+          <div class="text-xs font-bold text-sky-800 mb-1.5 flex items-center gap-1.5">
+            <span>📊 Ilustrasi Tabel Horizontal (HLOOKUP mencari ke kanan ➡️):</span>
+          </div>
+          <table class="w-full text-xs sm:text-sm text-center border-collapse bg-white rounded-xl overflow-hidden">
+            <tr class="bg-sky-600 text-white font-bold">
+              <td class="p-2 border border-sky-500">Baris 1 (Kunci)</td>
+              <td class="p-2 border border-sky-500">8A</td>
+              <td class="p-2 border border-sky-500 bg-amber-500">8B 🔍</td>
+              <td class="p-2 border border-sky-500">8C</td>
+            </tr>
+            <tr class="text-slate-700 font-semibold">
+              <td class="p-2 border border-slate-200 bg-slate-50">Baris 2 (Hasil)</td>
+              <td class="p-2 border border-slate-200">Juz 30</td>
+              <td class="p-2 border border-slate-200 bg-amber-100 font-bold text-amber-900">Juz 29 ✅</td>
+              <td class="p-2 border border-slate-200">Juz 28</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Area Drop / Susunan Jawaban -->
+        <div class="bg-slate-50 border-2 border-dashed border-emerald-400 rounded-2xl p-4 min-h-[110px] mb-4">
+          <div class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2">Susunan Jawabanmu (Klik balok di bawah untuk menambahkan):</div>
+          <div id="s1-dropzone" class="flex flex-wrap gap-2 items-center">
+            <span class="text-slate-400 italic text-sm">Belum ada balok yang dipilih...</span>
+          </div>
+        </div>
+
+        <!-- Pilihan Balok Kata -->
+        <div id="s1-pool" class="grid grid-cols-1 gap-2.5">
+          ${allBlocks.map(b => `
+            <button type="button" id="chip-${b.id}" onclick="toggleStage1Block('${b.id}', '${b.text.replace(/'/g, "\\'")}')" 
+              class="chip-item text-left p-3.5 sm:p-4 rounded-2xl bg-white border-2 border-slate-200 hover:border-emerald-400 shadow-xs font-semibold text-slate-700 text-sm sm:text-base flex items-center justify-between gap-2 cursor-pointer">
+              <span>🧩 ${b.text}</span>
+              <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg shrink-0">+ Pilih</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function toggleStage1Block(id, text) {
+      if (gameState.stageCompleted[0]) return;
+      playSound('select');
+      const idx = stage1Selected.findIndex(item => item.id === id);
+      const chipBtn = document.getElementById(`chip-${id}`);
+
+      if (idx > -1) {
+        stage1Selected.splice(idx, 1);
+        chipBtn.classList.remove('opacity-40', 'bg-emerald-50', 'border-emerald-400');
+      } else {
+        stage1Selected.push({ id, text });
+        chipBtn.classList.add('opacity-40', 'bg-emerald-50', 'border-emerald-400');
+      }
+      renderStage1Dropzone();
+    }
+
+    function renderStage1Dropzone() {
+      const dz = document.getElementById('s1-dropzone');
+      if (stage1Selected.length === 0) {
+        dz.innerHTML = `<span class="text-slate-400 italic text-sm">Belum ada balok yang dipilih...</span>`;
+        return;
+      }
+      dz.innerHTML = stage1Selected.map((item, idx) => `
+        <button type="button" onclick="toggleStage1Block('${item.id}', '${item.text.replace(/'/g, "\\'")}')"
+          class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-sm sm:text-base font-semibold shadow-xs flex items-center gap-2 cursor-pointer">
+          <span class="bg-white/20 px-2 py-0.5 rounded-md text-xs font-extrabold">${idx + 1}</span>
+          <span>${item.text}</span>
+          <span class="text-xs opacity-80">✕</span>
+        </button>
+      `).join('');
+    }
+
+    // --- BABAK 2: VISUALISASI DATA ---
+    function renderStage2(container, stage) {
+      stage2Selected = new Set();
+      container.innerHTML = `
+        <p class="text-sm sm:text-base font-bold text-slate-700 mb-3">💡 ${stage.promptHint}</p>
+        <div class="grid grid-cols-1 gap-3">
+          ${stage.options.map(opt => `
+            <button type="button" id="s2-${opt.id}" onclick="toggleStage2Option('${opt.id}')"
+              class="chip-item text-left p-4 rounded-2xl bg-white border-2 border-slate-200 hover:border-purple-400 flex items-center gap-3.5 cursor-pointer">
+              <div id="s2-check-${opt.id}" class="w-7 h-7 rounded-lg border-2 border-slate-300 flex items-center justify-center font-bold text-white shrink-0"></div>
+              <span class="text-sm sm:text-base font-semibold text-slate-800">${opt.text}</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function toggleStage2Option(id) {
+      if (gameState.stageCompleted[1]) return;
+      playSound('select');
+      const btn = document.getElementById(`s2-${id}`);
+      const box = document.getElementById(`s2-check-${id}`);
+      if (stage2Selected.has(id)) {
+        stage2Selected.delete(id);
+        btn.classList.remove('border-purple-500', 'bg-purple-50');
+        box.classList.remove('bg-purple-600', 'border-purple-600');
+        box.textContent = '';
+      } else {
+        stage2Selected.add(id);
+        btn.classList.add('border-purple-500', 'bg-purple-50');
+        box.classList.add('bg-purple-600', 'border-purple-600');
+        box.textContent = '✓';
+      }
+    }
+
+    // --- BABAK 3: 4 SISTEM BILANGAN KOMPUTER ---
+    function renderStage3(container, stage) {
+      stage3Selected = new Set();
+      container.innerHTML = `
+        <p class="text-sm sm:text-base font-bold text-slate-700 mb-3">💡 ${stage.promptHint}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          ${stage.candidates.map(item => `
+            <button type="button" id="s3-${item.id}" onclick="toggleStage3Card('${item.id}')"
+              class="chip-item p-4 rounded-2xl bg-white border-2 border-slate-200 hover:border-amber-400 text-left flex items-center gap-3.5 cursor-pointer">
+              <div class="w-12 h-12 rounded-2xl bg-amber-100 text-2xl flex items-center justify-center shrink-0">
+                ${item.icon}
+              </div>
+              <div class="flex-grow">
+                <div class="font-extrabold text-base sm:text-lg text-slate-800">${item.name}</div>
+                <div class="text-xs sm:text-sm font-semibold text-slate-500">${item.basis}</div>
+              </div>
+              <div id="s3-badge-${item.id}" class="w-7 h-7 rounded-full border-2 border-slate-300 flex items-center justify-center text-white font-bold text-sm shrink-0"></div>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function toggleStage3Card(id) {
+      if (gameState.stageCompleted[2]) return;
+      playSound('select');
+      const card = document.getElementById(`s3-${id}`);
+      const badge = document.getElementById(`s3-badge-${id}`);
+      if (stage3Selected.has(id)) {
+        stage3Selected.delete(id);
+        card.classList.remove('border-amber-500', 'bg-amber-50');
+        badge.classList.remove('bg-amber-500', 'border-amber-500');
+        badge.textContent = '';
+      } else {
+        stage3Selected.add(id);
+        card.classList.add('border-amber-500', 'bg-amber-50');
+        badge.classList.add('bg-amber-500', 'border-amber-500');
+        badge.textContent = '✓';
+      }
+    }
+
+    // --- BABAK 4: ALASAN KOMPUTER GUNAKAN BINER ---
+    function renderStage4(container, stage) {
+      stage4Selected = new Set();
+      container.innerHTML = `
+        <p class="text-sm sm:text-base font-bold text-slate-700 mb-3">💡 ${stage.promptHint}</p>
+        
+        <!-- Visual Sakelar Listrik 0 & 1 -->
+        <div class="bg-slate-900 text-white rounded-2xl p-4 mb-4 flex flex-wrap items-center justify-around gap-4">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1.5 rounded-xl bg-slate-700 text-slate-300 font-mono font-bold text-lg">0 = OFF</span>
+            <span class="text-xs sm:text-sm text-slate-300">Tidak ada arus listrik</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-mono font-extrabold text-lg shadow-md">1 = ON</span>
+            <span class="text-xs sm:text-sm text-emerald-300">Ada arus listrik mengalir</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          ${stage.reasons.map(r => `
+            <button type="button" id="s4-${r.id}" onclick="toggleStage4Reason('${r.id}')"
+              class="chip-item p-4 rounded-2xl bg-white border-2 border-slate-200 hover:border-rose-400 text-left flex flex-col justify-between gap-2 cursor-pointer">
+              <div class="flex items-start justify-between gap-2">
+                <span class="font-extrabold text-base text-slate-800">${r.title}</span>
+                <span id="s4-pill-${r.id}" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-500 shrink-0">OFF (0)</span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">${r.desc}</p>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function toggleStage4Reason(id) {
+      if (gameState.stageCompleted[3]) return;
+      playSound('select');
+      const card = document.getElementById(`s4-${id}`);
+      const pill = document.getElementById(`s4-pill-${id}`);
+      if (stage4Selected.has(id)) {
+        stage4Selected.delete(id);
+        card.classList.remove('border-emerald-500', 'bg-emerald-50');
+        pill.classList.remove('bg-emerald-500', 'text-white');
+        pill.classList.add('bg-slate-100', 'text-slate-500');
+        pill.textContent = 'OFF (0)';
+      } else {
+        stage4Selected.add(id);
+        card.classList.add('border-emerald-500', 'bg-emerald-50');
+        pill.classList.remove('bg-slate-100', 'text-slate-500');
+        pill.classList.add('bg-emerald-500', 'text-white');
+        pill.textContent = 'ON (1) ⚡';
+      }
+    }
+
+    // --- BABAK 5: TABEL KONVERSI 80 DESIMAL KE BINER ---
+    function renderStage5(container, stage) {
+      stage5Remainders = ['', '', '', '', '', '', ''];
+      stage5FinalBinary = '';
+
+      const steps = [
+        { dividend: 80, quotient: 40, correctRem: '0' },
+        { dividend: 40, quotient: 20, correctRem: '0' },
+        { dividend: 20, quotient: 10, correctRem: '0' },
+        { dividend: 10, quotient: 5,  correctRem: '0' },
+        { dividend: 5,  quotient: 2,  correctRem: '1' },
+        { dividend: 2,  quotient: 1,  correctRem: '0' },
+        { dividend: 1,  quotient: 0,  correctRem: '1' }
+      ];
+
+      container.innerHTML = `
+        <p class="text-sm sm:text-base font-bold text-slate-700 mb-3">💡 ${stage.promptHint}</p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- Tabel Langkah Pembagian 2 -->
+          <div class="lg:col-span-7 overflow-x-auto bg-white border-2 border-emerald-200 rounded-2xl shadow-xs">
+            <table class="w-full text-center text-sm sm:text-base border-collapse">
+              <thead>
+                <tr class="bg-emerald-600 text-white font-bold">
+                  <th class="p-2.5 sm:p-3">Langkah Pembagian</th>
+                  <th class="p-2.5 sm:p-3">Hasil Bulat</th>
+                  <th class="p-2.5 sm:p-3 bg-amber-500">Sisa Bagi (0 / 1)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${steps.map((st, idx) => `
+                  <tr class="border-b border-slate-100 ${idx % 2 === 0 ? 'bg-slate-50/60' : 'bg-white'}">
+                    <td class="p-2.5 font-mono font-bold text-slate-800">${st.dividend} ÷ 2</td>
+                    <td class="p-2.5 font-mono font-semibold text-slate-600">${st.quotient}</td>
+                    <td class="p-2">
+                      <div class="inline-flex gap-1.5 bg-slate-100 p-1 rounded-xl">
+                        <button type="button" id="rem-${idx}-0" onclick="setStage5Remainder(${idx}, '0')"
+                          class="w-10 h-9 rounded-lg font-mono font-extrabold text-base bg-white text-slate-700 border border-slate-300 hover:bg-emerald-100 cursor-pointer">0</button>
+                        <button type="button" id="rem-${idx}-1" onclick="setStage5Remainder(${idx}, '1')"
+                          class="w-10 h-9 rounded-lg font-mono font-extrabold text-base bg-white text-slate-700 border border-slate-300 hover:bg-emerald-100 cursor-pointer">1</button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Panel Kesimpulan Baca Dari Bawah ke Atas -->
+          <div class="lg:col-span-5 bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 sm:p-5">
+            <div class="flex items-center gap-2 font-extrabold text-amber-900 text-base sm:text-lg mb-2">
+              <span>⬆️</span> Aturan Membaca Hasil Biner:
+            </div>
+            <p class="text-xs sm:text-sm text-amber-800 mb-3 leading-relaxed">
+              Tuliskan sisa hasil bagi berurutan <strong>dari baris paling bawah ke paling atas</strong>!
+            </p>
+
+            <!-- Pratinjau Otomatis Susunan dari Bawah ke Atas -->
+            <div class="bg-white rounded-xl p-3 border border-amber-200 mb-4 text-center">
+              <div class="text-xs font-bold text-slate-500 mb-1">Susunan Sisa (Bawah ➡️ Atas):</div>
+              <div id="s5-live-preview" class="font-mono text-xl sm:text-2xl font-extrabold tracking-widest text-emerald-700">
+                _ _ _ _ _ _ _
+              </div>
+            </div>
+
+            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-2">
+              Pilih Hasil Akhir Konversi 80₁₀ dalam Biner:
+            </label>
+            <div class="grid grid-cols-1 gap-2">
+              ${['1010000', '0000101', '1001000', '1100000'].map(bin => `
+                <button type="button" id="s5-ans-${bin}" onclick="selectStage5Final('${bin}')"
+                  class="chip-item p-3 rounded-xl bg-white border-2 border-slate-200 hover:border-emerald-500 font-mono font-extrabold text-base sm:text-lg text-slate-800 text-center cursor-pointer">
+                  ${bin}₂
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function setStage5Remainder(rowIdx, val) {
+      if (gameState.stageCompleted[4]) return;
+      playSound('select');
+      stage5Remainders[rowIdx] = val;
+
+      const btn0 = document.getElementById(`rem-${rowIdx}-0`);
+      const btn1 = document.getElementById(`rem-${rowIdx}-1`);
+
+      btn0.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
+      btn1.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
+      btn0.classList.add('bg-white', 'text-slate-700');
+      btn1.classList.add('bg-white', 'text-slate-700');
+
+      const activeBtn = document.getElementById(`rem-${rowIdx}-${val}`);
+      activeBtn.classList.remove('bg-white', 'text-slate-700');
+      activeBtn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
+
+      // Update live preview dari bawah ke atas (indeks 6 ke 0)
+      const reversed = [...stage5Remainders].reverse().map(v => v === '' ? '_' : v).join(' ');
+      document.getElementById('s5-live-preview').textContent = reversed;
+    }
+
+    function selectStage5Final(bin) {
+      if (gameState.stageCompleted[4]) return;
+      playSound('select');
+      stage5FinalBinary = bin;
+      ['1010000', '0000101', '1001000', '1100000'].forEach(opt => {
+        const el = document.getElementById(`s5-ans-${opt}`);
+        el.classList.remove('border-emerald-600', 'bg-emerald-100', 'text-emerald-900');
+      });
+      const chosen = document.getElementById(`s5-ans-${bin}`);
+      chosen.classList.add('border-emerald-600', 'bg-emerald-100', 'text-emerald-900');
+    }
+
+    // --- 5. RESET & PENILAIAN TIAP BABAK ---
+    function resetCurrentStage() {
+      if (gameState.stageCompleted[gameState.currentStage]) return;
+      playSound('click');
+      renderStage(gameState.currentStage);
+    }
+
+    function checkCurrentStage() {
+      const idx = gameState.currentStage;
+      const stage = stagesData[idx];
+      let earned = 0;
+      let isPerfect = false;
+      let msgTitle = '';
+      let msgBody = '';
+
+      if (idx === 0) {
+        // Babak 1: Susun HLOOKUP
+        if (stage1Selected.length === 0) {
+          showTempAlert('Pilih minimal satu balok kata terlebih dahulu ya!');
+          return;
+        }
+        const chosenIds = stage1Selected.map(x => x.id);
+        const exactMatch = JSON.stringify(chosenIds) === JSON.stringify(stage.correctOrder);
+        const hasAllCorrect = stage.correctOrder.every(id => chosenIds.includes(id)) && chosenIds.length === 3;
+
+        if (exactMatch) {
+          earned = 20;
+          isPerfect = true;
+          msgTitle = 'MasyaAllah, Tepat Sekali!';
+          msgBody = 'Susunanmu sempurna! HLOOKUP memang mencari nilai kunci pada baris pertama secara mendatar (horizontal), lalu mengambil data dari baris di bawahnya.';
+        } else if (hasAllCorrect) {
+          earned = 15;
+          msgTitle = 'Bagus! Hampir Sempurna!';
+          msgBody = 'Semua konsep intinya sudah kamu pilih, hanya urutan kalimatnya sedikit tertukar. Perhatikan ringkasan kunci jawaban di bawah ya.';
+        } else {
+          earned = 10;
+          msgTitle = 'Terus Semangat Belajar!';
+          msgBody = 'Ingat kata kuncinya: H pada HLOOKUP berarti Horizontal (mendatar) dan mencari pada baris pertama tabel.';
+        }
+      } else if (idx === 1) {
+        // Babak 2: Visualisasi Data
+        if (stage2Selected.size === 0) {
+          showTempAlert('Centang pernyataan yang sesuai tentang visualisasi data terlebih dahulu!');
+          return;
+        }
+        let correctCount = 0;
+        let wrongCount = 0;
+        stage.options.forEach(opt => {
+          if (stage2Selected.has(opt.id)) {
+            if (opt.correct) correctCount++;
+            else wrongCount++;
+          }
+        });
+        if (correctCount === 3 && wrongCount === 0) {
+          earned = 20;
+          isPerfect = true;
+          msgTitle = 'Luar Biasa, Arsitek Data!';
+          msgBody = 'Kamu berhasil mengidentifikasi seluruh makna dan manfaat visualisasi data dengan tepat.';
+        } else {
+          earned = Math.max(8, correctCount * 6 - wrongCount * 3);
+          msgTitle = 'Bagus, Mari Kita Lengkapi Pemahamannya!';
+          msgBody = `Kamu memilih ${correctCount} pernyataan tepat. Visualisasi data bertujuan mengubah angka menjadi grafik/diagram agar mudah dipahami.`;
+        }
+      } else if (idx === 2) {
+        // Babak 3: 4 Sistem Bilangan
+        if (stage3Selected.size === 0) {
+          showTempAlert('Pilih 4 sistem bilangan komputer terlebih dahulu!');
+          return;
+        }
+        let correctCount = 0;
+        let wrongCount = 0;
+        stage.candidates.forEach(c => {
+          if (stage3Selected.has(c.id)) {
+            if (c.correct) correctCount++;
+            else wrongCount++;
+          }
+        });
+        if (correctCount === 4 && wrongCount === 0) {
+          earned = 20;
+          isPerfect = true;
+          msgTitle = 'Mumtaz! Keempat Pilar Bilangan Terkunci!';
+          msgBody = 'Benar sekali! Komputer menggunakan Biner (basis 2), Oktal (basis 8), Desimal (basis 10), dan Heksadesimal (basis 16).';
+        } else {
+          earned = Math.max(8, correctCount * 5 - wrongCount * 3);
+          msgTitle = 'Sedikit Lagi Tepat!';
+          msgBody = `Kamu menemukan ${correctCount} dari 4 sistem bilangan komputer. Ingat: Biner, Oktal, Desimal, dan Heksadesimal.`;
+        }
+      } else if (idx === 3) {
+        // Babak 4: Alasan Biner
+        if (stage4Selected.size === 0) {
+          showTempAlert('Nyalakan sakelar alasan yang benar terlebih dahulu!');
+          return;
+        }
+        let correctCount = 0;
+        let wrongCount = 0;
+        stage.reasons.forEach(r => {
+          if (stage4Selected.has(r.id)) {
+            if (r.correct) correctCount++;
+            else wrongCount++;
+          }
+        });
+        if (correctCount === 2 && wrongCount === 0) {
+          earned = 20;
+          isPerfect = true;
+          msgTitle = 'Sirkuit Aktif! Analisis Sangat Cerdas!';
+          msgBody = 'Tepat! Sinyal listrik hanya memiliki dua keadaan (ON = 1 dan OFF = 0) sehingga biner membuat komputer bekerja cepat dan stabil.';
+        } else {
+          earned = Math.max(8, correctCount * 8 - wrongCount * 4);
+          msgTitle = 'Bagus! Mari Perkuat Konsepnya!';
+          msgBody = 'Alasan utama penggunaan biner adalah kesesuaiannya dengan dua kondisi arus listrik (ON/OFF) dan ketahanan terhadap gangguan sinyal.';
+        }
+      } else if (idx === 4) {
+        // Babak 5: Konversi 80 ke Biner
+        if (stage5Remainders.includes('') || !stage5FinalBinary) {
+          showTempAlert('Lengkapi semua sisa bagi (0 atau 1) pada tabel dan pilih hasil biner akhirnya ya!');
+          return;
+        }
+        const expectedRem = ['0', '0', '0', '0', '1', '0', '1'];
+        let tableMatches = 0;
+        for (let i = 0; i < 7; i++) {
+          if (stage5Remainders[i] === expectedRem[i]) tableMatches++;
+        }
+        const finalOk = stage5FinalBinary === '1010000';
+
+        if (tableMatches === 7 && finalOk) {
+          earned = 20;
+          isPerfect = true;
+          msgTitle = 'Sempurna! Perhitunganmu Akurat 100%!';
+          msgBody = 'MasyaAllah, tabel pembagian dan pembacaan sisa dari bawah ke atas sangat teliti: 80₁₀ = 1010000₂!';
+        } else {
+          earned = Math.round((tableMatches / 7) * 12) + (finalOk ? 8 : 0);
+          earned = Math.max(8, earned);
+          msgTitle = 'Usaha Hebat di Babak Terakhir!';
+          msgBody = `Kamu mengisi ${tableMatches} dari 7 baris tabel dengan benar. Ingat, hasil biner dibaca dari sisa paling bawah ke atas menjadi 1010000₂.`;
+        }
+      }
+
+      // Simpan skor babak & kunci interaksi
+      gameState.scores[idx] = earned;
+      gameState.stageCompleted[idx] = true;
+      updateHUD();
+
+      // Tampilkan umpan balik
+      const fbBox = document.getElementById('feedback-box');
+      const fbIcon = document.getElementById('feedback-icon');
+      const fbTitle = document.getElementById('feedback-title');
+      const fbText = document.getElementById('feedback-text');
+      const fbKey = document.getElementById('feedback-key');
+
+      fbBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-400', 'bg-amber-50', 'border-amber-400');
+      if (isPerfect) {
+        playSound('success');
+        fbBox.classList.add('bg-emerald-50', 'border-emerald-400');
+        fbIcon.textContent = '🌟';
+        fbTitle.className = 'text-lg sm:text-xl font-extrabold mb-1 text-emerald-800';
+      } else {
+        playSound('partial');
+        fbBox.classList.add('bg-amber-50', 'border-amber-400');
+        fbIcon.textContent = '💡';
+        fbTitle.className = 'text-lg sm:text-xl font-extrabold mb-1 text-amber-800';
+      }
+
+      fbTitle.textContent = `${msgTitle} (+${earned} Poin)`;
+      fbText.textContent = msgBody;
+      fbKey.textContent = stage.keyAnswer;
+
+      // Ubah tombol aksi
+      document.getElementById('btn-submit-stage').classList.add('hidden');
+      document.getElementById('btn-reset-stage').classList.add('hidden');
+      const nextBtn = document.getElementById('btn-next-stage');
+      nextBtn.classList.remove('hidden');
+      nextBtn.textContent = idx === 4 ? '🏆 Lihat Hasil & Pesan Hikmah' : 'Lanjut Babak Berikutnya ➡️';
+
+      // Scroll halus ke umpan balik agar nyaman di layar ponsel
+      fbBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Kotak peringatan ramah (pengganti alert())
+    function showTempAlert(message) {
+      playSound('error');
+      const fbBox = document.getElementById('feedback-box');
+      fbBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-400');
+      fbBox.classList.add('bg-amber-50', 'border-amber-400');
+      document.getElementById('feedback-icon').textContent = '🤔';
+      document.getElementById('feedback-title').className = 'text-lg font-extrabold mb-1 text-amber-800';
+      document.getElementById('feedback-title').textContent = 'Ups, Belum Lengkap!';
+      document.getElementById('feedback-text').textContent = message;
+      document.getElementById('feedback-key').textContent = 'Selesaikan dulu tantangan di atas lalu tekan Periksa Jawaban ya.';
+    }
+
+    function nextStage() {
+      playSound('click');
+      if (gameState.currentStage < 4) {
+        gameState.currentStage++;
+        renderStage(gameState.currentStage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        showFinalScreen();
+      }
+    }
+
+    // --- 6. LAYAR AKHIR & HIKMAH ---
+    function showFinalScreen() {
+      playSound('fanfare');
+      document.getElementById('screen-game').classList.add('hidden');
+      document.getElementById('progress-container').classList.add('hidden');
+      document.getElementById('screen-end').classList.remove('hidden');
+
+      const totalScore = gameState.scores.reduce((a, b) => a + b, 0);
+      document.getElementById('final-player-name').textContent = gameState.playerName;
+      document.getElementById('final-score').textContent = totalScore;
+
+      let predicate = '';
+      let stars = '';
+      if (totalScore >= 90) {
+        predicate = 'Predikat: Arsitek Digital Utama Madrasah (Mumtaz!)';
+        stars = '⭐⭐⭐⭐⭐';
+      } else if (totalScore >= 75) {
+        predicate = 'Predikat: Arsitek Digital Muda Berbakat (Jayyid Jiddan!)';
+        stars = '⭐⭐⭐⭐';
+      } else {
+        predicate = 'Predikat: Penjelajah Ilmu Digital (Terus Semangat!)';
+        stars = '⭐⭐⭐';
+      }
+      document.getElementById('final-predicate').textContent = predicate;
+      document.getElementById('final-stars').textContent = stars;
+
+      const labels = ['Babak 1: HLOOKUP', 'Babak 2: Visualisasi', 'Babak 3: 4 Sistem', 'Babak 4: Biner', 'Babak 5: Konversi 80'];
+      document.getElementById('final-summary-grid').innerHTML = gameState.scores.map((sc, i) => `
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-2.5 text-center">
+          <div class="font-bold text-slate-600 text-xs">${labels[i]}</div>
+          <div class="font-extrabold text-emerald-600 text-base mt-0.5">+${sc} / 20</div>
+        </div>
+      `).join('');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
